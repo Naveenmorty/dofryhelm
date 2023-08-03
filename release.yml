@@ -1,0 +1,91 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more: https://aka.ms/yaml
+
+trigger: none
+pr: none
+
+parameters:
+  - name: Agent_Type
+    type: string
+
+  - name: Environment
+    type: string
+
+  - name: Azure_Agent_Specification
+    type: string
+
+  - name: Source_CI_Pipeline
+    type: string
+
+  - name: chartPath
+    type: string
+
+  - name: values_chartPath
+    type: string
+
+  - name: azureSubscription
+    type: string
+    
+  - name: azureResourceGroup
+    type: string
+    
+  - name: kubernetesCluster
+    type: string
+
+# Define the artifact that the release pipeline will use
+resources:
+  pipelines:
+    - pipeline: BuildPipelineAlias
+      project: Samlpe-.net
+      source: ${{ parameters.Source_CI_Pipeline }}
+      trigger: none
+
+stages:
+  - stage: Release
+    pool:
+      ${{ if eq(parameters.Agent_Type, 'Selfhosted_Agent') }}:
+        name: Default
+        demands:
+          - ubuntu
+      ${{ if eq(parameters.Agent_Type, 'Azure_Agent') }}:
+        vmimage: ${{ parameters.Azure_Agent_Specification }}
+
+    variables:
+      - name: connectionType  # Download task for download artifact
+        value: 'Azure Resource Manager'
+
+    jobs:
+      - job: deployment
+        steps:
+              
+           - task: HelmInstaller@0
+            displayName: 'Install Helm 2.9.1'
+            inputs:
+              helmVersion: 2.9.1
+              kubectlVersion: 1.10.3
+              checkLatestKubectl: false
+
+          - task: PowerShell@2
+            displayName: 'Print Build Number'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $buildNumber = '$(resources.pipeline.BuildPipelineAlias.runName)'            
+                Write-Host "Build Number from Build Pipeline: $buildNumber"
+                Write-Host "##vso[task.setvariable variable=MY_BUILD_NUMBER;isOutput=true]$buildNumber"
+          
+          - task: HelmDeploy@0
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: '${{ parameters.azureSubscription }}'
+              azureResourceGroup: '${{ parameters.azureResourceGroup }}'
+              kubernetesCluster: '${{ parameters.kubernetesCluster }}'
+              namespace: 'classictoyaml'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(System.DefaultWorkingDirectory)/${{ parameters.chartPath }}'
+              releaseName: 'helloworld'
+              overrideValues: 'image.tag=$(resources.pipeline.BuildPipelineAlias.runName)'
+              valueFile: '$(System.DefaultWorkingDirectory)/${{ parameters.values_chartPath }}'
+              arguments: '--create-namespace --atomic --timeout 2m0s'

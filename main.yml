@@ -1,0 +1,122 @@
+trigger: none
+pr: none
+
+parameters:
+  - name: Environment
+    displayName: Environment Name
+    type: string
+    default: DEV
+    values:
+      - DEV
+      - UAT
+      - PROD
+
+  - name: Source_CI_Pipeline
+    displayName: Source CI Pipeline
+    type: string
+    default: Naveenmorty.dofryproject
+    values:
+      - Naveenmorty.dofryproject
+      - Naveenmorty.dofryproject.DEV
+      - Naveenmorty.angularproj.PROD
+      
+
+  - name: chartPath
+    displayName: chartPath
+    type: string
+    default: charts/hello-world
+    values:
+      - charts/hello-world
+      - charts/hello-world1
+      - charts/hello-world2
+      
+
+  - name: values_chartPath
+    displayName: values_chartPath
+    type: string
+    default: charts/hello-world/values.yaml
+    values:
+      - charts/hello-world/values.yaml
+      - charts/hello-world/values.yaml
+      - charts/hello-world/values.yaml
+
+  - name: Agent_Type
+    displayName: Choose_AgentType
+    default: Azure_Agent
+    values:
+      - Selfhosted_Agent
+      - Azure_Agent
+
+  - name: Azure_Agent_Specification
+    displayName: Agent Specification
+    type: string
+    default: ubuntu-20.04
+    values:
+      - ubuntu-20.04
+      - ubuntu-22.04
+      - ubuntu-latest
+
+  - name: azureSubscription
+    displayName: AKS Service_Connection
+    type: string
+    default: dofry
+    values:
+      - dofry
+      - dofry1
+      - dofry2
+      
+  - name: azureResourceGroup
+    displayName: azureResourceGroup
+    type: string
+    default: Dufry-POC
+    values:
+      - Dufry-POC
+      - Dufry-POC1
+      - Dufry-POC2
+  - name: kubernetesCluster
+    displayName: kubernetesCluster
+    type: string
+    default: dufrycluster
+    values:
+      - dufrycluster
+      - dufrycluster1
+      - dufrycluster2
+              
+
+stages:
+  - ${{ if or(eq(parameters.Environment, 'DEV'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject')) }}:
+    - template: /release.yaml
+      parameters:
+        azureSubscription: ${{ azureSubscription }}
+        azureResourceGroup: ${{ azureResourceGroup }}
+        kubernetesCluster: ${{ kubernetesCluster }}
+        Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
+        Agent_Type: ${{ parameters.Agent_Type }}
+        Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
+        Environment: ${{ parameters.Environment }}
+        chartPath: ${{ parameters.chartPath }}
+        values_chartpath: ${{ parameters.values_chartPath }}
+
+  - ${{ if or(eq(parameters.Environment, 'UAT'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject.DEV')) }}:
+    - template: /release.yaml
+      parameters:
+        K8s_Service_Connection: ${{ AKS_Service_Connection }}
+        Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
+        Agent_Type: ${{ parameters.Agent_Type }}
+        Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
+        Environment: ${{ parameters.Environment }}
+        chartPath: ${{ parameters.chartPath }}
+        values_chartpath: ${{ parameters.values_chartPath }}
+
+  - ${{ if or(eq(parameters.Environment, 'PROD'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.angularproj.PROD')) }}:
+    - template: /release.yaml
+      parameters:
+        K8s_Service_Connection: ${{ AKS_Service_Connection }}
+        Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
+        Agent_Type: ${{ parameters.Agent_Type }}
+        Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
+        Environment: ${{ parameters.Environment }}
+        chartPath: ${{ parameters.chartPath }}
+        values_chartpath: ${{ parameters.values_chartPath }}
+
+  
