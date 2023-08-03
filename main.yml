@@ -87,9 +87,9 @@ stages:
   - ${{ if or(eq(parameters.Environment, 'DEV'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject')) }}:
     - template: /release.yaml
       parameters:
-        azureSubscription: ${{ azureSubscription }}
-        azureResourceGroup: ${{ azureResourceGroup }}
-        kubernetesCluster: ${{ kubernetesCluster }}
+        azureSubscription: ${{ parameters.azureSubscription }}
+        azureResourceGroup: ${{ parameters.azureResourceGroup }}
+        kubernetesCluster: ${{ parameters.kubernetesCluster }}
         Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
         Agent_Type: ${{ parameters.Agent_Type }}
         Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
@@ -100,7 +100,9 @@ stages:
   - ${{ if or(eq(parameters.Environment, 'UAT'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject.DEV')) }}:
     - template: /release.yaml
       parameters:
-        K8s_Service_Connection: ${{ AKS_Service_Connection }}
+        azureSubscription: ${{ parameters.azureSubscription }}
+        azureResourceGroup: ${{ parameters.azureResourceGroup }}
+        kubernetesCluster: ${{ parameters.kubernetesCluster }}
         Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
         Agent_Type: ${{ parameters.Agent_Type }}
         Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
@@ -111,7 +113,9 @@ stages:
   - ${{ if or(eq(parameters.Environment, 'PROD'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.angularproj.PROD')) }}:
     - template: /release.yaml
       parameters:
-        K8s_Service_Connection: ${{ AKS_Service_Connection }}
+        azureSubscription: ${{ parameters.azureSubscription }}
+        azureResourceGroup: ${{ parameters.azureResourceGroup }}
+        kubernetesCluster: ${{ parameters.kubernetesCluster }}
         Source_CI_Pipeline: ${{ parameters.Source_CI_Pipeline }}
         Agent_Type: ${{ parameters.Agent_Type }}
         Azure_Agent_Specification: ${{ parameters.Azure_Agent_Specification }}
