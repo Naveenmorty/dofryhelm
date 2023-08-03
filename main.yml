@@ -85,7 +85,7 @@ parameters:
 
 stages:
   - ${{ if or(eq(parameters.Environment, 'DEV'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject')) }}:
-    - template: /release.yml
+    - template: release.yml
       parameters:
         azureSubscription: ${{ parameters.azureSubscription }}
         azureResourceGroup: ${{ parameters.azureResourceGroup }}
@@ -98,7 +98,7 @@ stages:
         values_chartpath: ${{ parameters.values_chartPath }}
 
   - ${{ if or(eq(parameters.Environment, 'UAT'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject.DEV')) }}:
-    - template: /release.yaml
+    - template: release.yml
       parameters:
         azureSubscription: ${{ parameters.azureSubscription }}
         azureResourceGroup: ${{ parameters.azureResourceGroup }}
@@ -111,7 +111,7 @@ stages:
         values_chartpath: ${{ parameters.values_chartPath }}
 
   - ${{ if or(eq(parameters.Environment, 'PROD'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.angularproj.PROD')) }}:
-    - template: /release.yaml
+    - template: release.yml
       parameters:
         azureSubscription: ${{ parameters.azureSubscription }}
         azureResourceGroup: ${{ parameters.azureResourceGroup }}
