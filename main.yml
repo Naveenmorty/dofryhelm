@@ -85,7 +85,7 @@ parameters:
 
 stages:
   - ${{ if or(eq(parameters.Environment, 'DEV'), eq(parameters.Source_CI_Pipeline, 'Naveenmorty.dofryproject')) }}:
-    - template: /release.yaml
+    - template: /release.yml
       parameters:
         azureSubscription: ${{ parameters.azureSubscription }}
         azureResourceGroup: ${{ parameters.azureResourceGroup }}
