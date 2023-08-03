@@ -73,6 +73,7 @@ parameters:
       - Dufry-POC
       - Dufry-POC1
       - Dufry-POC2
+      
   - name: kubernetesCluster
     displayName: kubernetesCluster
     type: string
