@@ -37,8 +37,8 @@ parameters:
     default: charts/hello-world/values.yaml
     values:
       - charts/hello-world/values.yaml
-      - charts/hello-world/values.yaml
-      - charts/hello-world/values.yaml
+      - charts/hello-world/values1.yaml
+      - charts/hello-world/values2.yaml
 
   - name: Agent_Type
     displayName: Choose_AgentType
